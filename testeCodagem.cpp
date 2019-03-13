@@ -24,7 +24,7 @@ using namespace std;
     vector<float> dir2;
     int turno[2];
 
-    double timeout = 1/100;
+    double timeout = 0.000000125;
 
     class Robo {
 
@@ -47,8 +47,6 @@ private:
 
 
 Robo *ply[2];
-
-
 
     WSADATA WSAData;
 

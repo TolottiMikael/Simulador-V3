@@ -5,25 +5,29 @@
 #include "cliente.cpp"
 #include <windows.h>
 
-using namespace std;
 
 
 void setup(){
-    cout<< "estou no setup" << endl;
+
+	pinMode(2, 1);
+	pinMode(3, 0);
+	
+	pinMode(6, 1);
+	pinMode(7, 0);
 }
 
 void loop(){
-   if(leituraFre() == 0){
-        vira(1);
-        cout << "viraaa" << endl;
-    }
-    else{
-        cout << " anda !!!" << endl;
-        anda();
-    }
 
+	int leitura;
+	
+	digitalWrite(2, 1);
+	leitura = digitalRead(3);
+	std::cout<< "leitura de : " <<leitura << std::endl;
+	
+	digitalWrite(6, 0);
+	leitura = digitalRead(7);
+	std::cout<< "leitura de : " <<leitura << std::endl;
 
 }
-
 
 #endif // CLIENT

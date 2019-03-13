@@ -13,8 +13,6 @@
 #include <time.h>
 #include <conio.h>
 
-
-
 using namespace std;
 
 bool gameover = false;
@@ -22,7 +20,7 @@ char env[1024];
 char response[1024];
 void setup();
 void loop();
-double timeout = 1/100;
+double timeout = 0.000000125;
 time_t inicioCod, millis;
 
     WSADATA WSAData;
@@ -115,7 +113,7 @@ double timed_getch(double n_seconds)
 
    start = time(NULL);
    now = start;
-
+   
    while(difftime(now, start) < n_seconds) {
         now = time(NULL);
    }
@@ -149,24 +147,35 @@ int main(){
     char resp[1024];
     char buffer[1024];
     inicioCod = time(NULL);
-
+	
     strcpy(env, "llobby");
+	ligaArduino();
+	
+	Sensor *a = new Sensor(2 , 3);
+	Sensor *b = new Sensor(6 , 7);
+	
+	
+	setup();
+	
     while(!gameover){
         time_t init;
         time_t fim;
+		
         loop();
-        if(checkGame){
+        
+		if(checkGame){
             gameover = true;
         }
         fim = time(NULL);
         timed_getch(timeout - (fim - init));
         system("cls");
+		
     }
 
     closesocket(server);
     WSACleanup();
     printf("Socket closed.");
-
+	desligaArduino();
     return 0;
 
 }

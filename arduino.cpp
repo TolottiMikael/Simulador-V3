@@ -1,6 +1,7 @@
 #ifndef FileGuard
 #define FileGuard
 #include <iostream>
+#include <time.h>
 
 
 
@@ -43,10 +44,9 @@ public:
 	int idigitalRead(int nP);
 	void idigitalWrite(int nP, int o);
 	void ipinMode(int nP, int modo);
-
 	int ianalogRead(int nP);
 	void ianalogWrite(int nP, int o);
-
+	double ipulseIn(int p, int state, double tempo);
 private:
 	static int nArd;
 	int ArdID;
@@ -60,7 +60,9 @@ class Sensor{
 	Sensor(int p1, int p2);
 	int isMeding();
 	private:
+	float timeAct;
 	int nSense;
+	float med;
 	PortaArd *port[2];
 };
 
@@ -80,6 +82,7 @@ class PonteH{
 	Sensor *sense[10];
 	Arduino *Ard[10];
 	Arduino *ArdB;
+	
 	
 int meding(){
 	int i;
@@ -120,6 +123,14 @@ int meding(){
 	
 	void analogWrite(int n1, int n2){
 		ArdB->ianalogWrite(n1, n2);
+	}
+	
+	double pulseIn(int p, int state){
+		return ArdB->ipulseIn(p, state, 2);
+	}
+	
+	double pulseIn(int p, int state, double t){
+		return ArdB->ipulseIn(p, state, t);
 	}
 	
 	void desligaArduino(){
@@ -167,14 +178,35 @@ int Sensor::isMeding(){
 		estados[this->port[1]->getNumber() ] = 1;
 		
 		if(this->nSense == 0){
-			this-med = leituraFre();
+			this->med = leituraFre();
 		}
 		else if(this->nSense == 1){
-			this-med = leituraEsq();
+			this->med = leituraEsq();
 		}
 		else if(this->nSense == 2){
-			this-med = leituraDir();
+			this->med = leituraDir();
 		}
+		time_t now;
+		now = time(NULL);
+		
+		if(this->reading == 0){
+			this->timeAct = ( this->med ) / ( 340.00 ) ;
+			this->timeAct = this->timeAct + now;
+			this->reading = 1;
+		}
+		else {
+			
+			if(now>= this->timeAct){
+				this->port[2]->setState(5);
+				this->reading = 0;
+			}
+			else {
+				this->port[2]->setState(0);
+				this->reading = 1;
+			}
+			
+		}
+		
 		
 		
 		return 1;
@@ -257,6 +289,40 @@ void Arduino::ipinMode(int nP, int modo){
 	this->portas[nP]->setMode(modo);
 }
 
+
+double Arduino::ipulseIn(int p, int state, double tempo){
+	time_t now;
+	time_t = init;
+	init = time(NULL);
+	now = time(NULL);
+	tempo = tempo + now;
+	int sair;
+	sair = 0;
+	
+	while(now <= tempo || sair == 0){
+		if(state > 0){
+			
+			if(estados[p] > 0){
+				sair = 1;
+			}
+			
+		}
+		else {
+			
+			if(estados[p] <= 0){
+				sair = 1;
+			}
+			
+		}
+		
+		
+		
+		meding();
+		now = time(NULL);
+	}
+	
+	return now - init;
+}
 
 //métodos das portas
 PortaArd::PortaArd(int n, bool p, bool a){
