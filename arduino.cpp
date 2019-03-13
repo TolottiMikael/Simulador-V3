@@ -69,7 +69,8 @@ class Sensor{
 class PonteH{
 	public:
 	PonteH(int n, int p1, int p2);
-	void ativa();
+	void attMot();
+	int sentido;
 	private:
 	float med;
 	int ponteNumber;
@@ -82,7 +83,9 @@ class PonteH{
 	Sensor *sense[10];
 	Arduino *Ard[10];
 	Arduino *ArdB;
-	
+	int nPonte;
+	nPonte = 0;
+	PonteH *pontes[2];	
 	
 int meding(){
 	int i;
@@ -100,6 +103,63 @@ int meding(){
 */
 	void ligaArduino(){
 		ArdB = new Arduino();
+	}
+	
+	void ligaPonte(int n, int p, int p2){
+		if(nPonte > 1) {
+			nPonte++;
+		}
+		else{
+		pontes[nPonte] = new PonteH(n, p, p2);
+		nPonte ++;
+		}
+	}
+	
+	double atualizaMotores(){
+		pontes[0]->attMot();
+		pontes[1]->attMot();
+		
+		if(ponte[0]->sentido  == 1 && ponte[1]->sentido  == 1 ){
+			return 1;
+		}
+		else if(ponte[0]->sentido  == 0 && ponte[1]->sentido  == 0 ){
+			//para
+			return 2;
+		}
+		else if(ponte[0]->sentido  == 1 && ponte[1]->sentido  == 0 ){
+			//15 direita
+			return 3;
+		}
+		else if(ponte[0]->sentido  == 0 && ponte[1]->sentido  == 1 ){
+			//15 esquerda
+			return 4;
+		}
+		else if(ponte[0]->sentido  == 1 && ponte[1]->sentido  == 2 ){
+			//45 direita
+			return 5;
+		}
+		else if(ponte[0]->sentido  == 2 && ponte[1]->sentido  == 1 ){
+			//45 esquerda
+			return 6;
+		}
+		
+		else if(ponte[0]->sentido  == 2 && ponte[1]->sentido  == 2 ){
+			//trás
+			return 7;
+		}
+		
+		else if(ponte[0]->sentido  == 2 && ponte[1]->sentido  == 0 ){
+			//15 esquerda
+			return 8;
+		}
+		
+		else if(ponte[0]->sentido  == 0 && ponte[1]->sentido  == 2 ){
+			//15 direita
+			return 9;
+		}
+		
+		
+		
 	}
 	
 	void pinMode(int n1, int n2) {
@@ -153,6 +213,21 @@ PonteH::PonteH(int n, int p1, int p2){
 	//output
 	this->port[1] = new PortaArd(p2, 0, 0);
 	
+}
+
+void PonteH::attMot(){
+	if(estados[ this->port[0]->getNumber() ] > 0 && estados[ this->port[1]->getNumber() ] <= 0){
+		//frente
+		this->sentido = 1;
+	}
+	else if(estados[ this->port[0]->getNumber() ] <= 0 && estados[ this->port[1]->getNumber() ] > 0){
+		//trás
+		this->sentido = 2;
+	}
+	else {
+		//parado
+		this->sentido = 0;
+	}
 }
 
 //sensor
